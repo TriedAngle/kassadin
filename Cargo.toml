@@ -1,0 +1,22 @@
+[package]
+name = "kassadin"
+version = "0.1.0"
+authors = ["Sebastian <Sebastian@Strobl.net>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["crates/kassatypes"]
+
+[features]
+default = ["api"]
+api = ["reqwest"]
+actix = ["awc"]
+lcu = ["sysinfo"]
+
+[dependencies]
+reqwest = { version = "0.11.3", optional = true }
+awc = { version = "3.0.0-beta.4", optional = true }
+sysinfo = { version = "0.17.2", optional = true }
+kassatypes = { path = "crates/kassatypes"}

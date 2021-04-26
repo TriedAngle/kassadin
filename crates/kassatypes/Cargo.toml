@@ -1,0 +1,9 @@
+[package]
+name = "kassatypes"
+version = "0.1.0"
+authors = ["Sebastian <Sebastian@Strobl.net>"]
+edition = "2018"
+
+
+[dependencies]
+serde = { version = "1.0.125", features = ["derive"], optional = true }
