@@ -5,14 +5,9 @@ pub struct RiotAPI {
     #[cfg(feature = "api")]
     api_client: RequestClient,
     #[cfg(feature = "lcu")]
-    lcu_client: LCUClient
-
+    lcu_client: LCUClient,
 }
 
-pub struct LCUClient {
+pub struct LCUClient {}
 
-}
-
-pub struct RiotAPIConfig {
-
-}
+pub struct RiotAPIConfig {}

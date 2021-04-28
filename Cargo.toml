@@ -7,7 +7,11 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["crates/kassatypes"]
+members = [
+    "crates/kassatypes",
+    "crates/kassaroutes",
+    "crates/kassapi"
+]
 
 [features]
 default = ["api"]
@@ -19,4 +23,7 @@ lcu = ["sysinfo"]
 reqwest = { version = "0.11.3", optional = true }
 awc = { version = "3.0.0-beta.4", optional = true }
 sysinfo = { version = "0.17.2", optional = true }
-kassatypes = { path = "crates/kassatypes"}
+
+kassatypes = { version = "*", path = "crates/kassatypes"}
+kassaroutes = { version = "*", path = "crates/kassaroutes"}
+kassapi = { version = "*", path = "crates/kassapi" }

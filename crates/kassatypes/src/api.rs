@@ -1,7 +1,7 @@
-#[cfg(feature = "serde")]
-pub use serde::{Deserialize, Serialize};
+pub mod account {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
 
-pub mod account_v1 {
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct Account {
@@ -19,7 +19,10 @@ pub mod account_v1 {
     }
 }
 
-pub mod champion_master_v1 {
+pub mod champion_mastery {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct ChampionMastery {
@@ -35,7 +38,10 @@ pub mod champion_master_v1 {
     }
 }
 
-pub mod champion_info {
+pub mod champion {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct ChampionInfo {
@@ -45,7 +51,10 @@ pub mod champion_info {
     }
 }
 
-pub mod clash_v1 {
+pub mod clash {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct Player {
@@ -89,7 +98,10 @@ pub mod clash_v1 {
     }
 }
 
-pub mod league_v4 {
+pub mod league {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct LeagueEntry {
@@ -145,7 +157,10 @@ pub mod league_v4 {
     }
 }
 
-pub mod lol_status_v4 {
+pub mod lol_status {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct PlatformData {
@@ -190,7 +205,10 @@ pub mod lol_status_v4 {
     }
 }
 
-pub mod summoner_v4 {
+pub mod summoner {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     pub struct Summoner {

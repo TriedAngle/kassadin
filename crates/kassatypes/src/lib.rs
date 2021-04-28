@@ -1,8 +1,14 @@
 #![allow(unused)]
 
-mod api;
-mod endpoints;
+pub mod api;
 mod champions;
-mod rank;
-mod client;
 mod queue;
+mod rank;
+mod region;
+
+pub mod consts {
+    pub use super::region::Region;
+    pub use super::queue::*;
+    pub use super::rank::*;
+    pub use super::champions::Champion;
+}
