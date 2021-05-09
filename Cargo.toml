@@ -10,7 +10,8 @@ edition = "2018"
 members = [
     "crates/kassatypes",
     "crates/kassaroutes",
-    "crates/kassapi"
+    "crates/kassapi",
+    "crates/kassaclient"
 ]
 
 [features]

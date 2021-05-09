@@ -7,3 +7,16 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+sysinfo = "0.17.3"
+reqwest = {version = "0.11.3", features = ["json"] }
+anyhow = "1.0.40"
+serde_json = "1.0.64"
+serde = { version = "1.0.125", features = ["derive"] }
+log = "0.4.14"
+
+kassatypes = { version = "0.1", path = "../kassatypes", features = ["serde"] }
+kassaroutes = { version = "0.1", path = "../kassaroutes", features = ["lcu"] }
+
+[dev-dependencies]
+tokio-test = "0.4.1"
+env_logger = "0.8.3"

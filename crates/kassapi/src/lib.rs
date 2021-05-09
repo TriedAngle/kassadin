@@ -132,9 +132,7 @@ mod test {
     #[test]
     fn make_request() {
         env_logger::init();
-        let api = API::builder()
-            .with_riot_key(KEY)
-            .build();
+        let api = API::builder().with_riot_key(KEY).build();
 
         let challenger =
             tokio_test::block_on(api.league().challenger(Region::EUW, Queue::RankedSolo5x5))

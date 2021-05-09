@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 mod client;
 
 type RequestClient = reqwest::Client;

@@ -194,19 +194,15 @@ impl<'a> League<'a> {
         page: Option<i32>,
     ) -> Result<Vec<api::league::LeagueEntry>> {
         let url = match page {
-            Some(page) => {
-                routes::league::ENTRIES_PAGED
-                    .replace("{queue}", &queue.to_string())
-                    .replace("{tier}", &tier.to_string())
-                    .replace("{division}", &division.to_string())
-                    .replace("{page}", &page.to_string())
-            }
-            None => {
-                routes::league::ENTRIES
-                    .replace("{queue}", &queue.to_string())
-                    .replace("{tier}", &tier.to_string())
-                    .replace("{division}", &division.to_string())
-            }
+            Some(page) => routes::league::ENTRIES_PAGED
+                .replace("{queue}", &queue.to_string())
+                .replace("{tier}", &tier.to_string())
+                .replace("{division}", &division.to_string())
+                .replace("{page}", &page.to_string()),
+            None => routes::league::ENTRIES
+                .replace("{queue}", &queue.to_string())
+                .replace("{tier}", &tier.to_string())
+                .replace("{division}", &division.to_string()),
         };
 
         self.api.simple_request(region, &url).await
@@ -221,19 +217,15 @@ impl<'a> League<'a> {
         page: Option<i32>,
     ) -> Result<Vec<api::league::LeagueEntry>> {
         let url = match page {
-            Some(page) => {
-                routes::league::ENTRIES_EXP_PAGED
-                    .replace("{queue}", &queue.to_string())
-                    .replace("{tier}", &tier.to_string())
-                    .replace("{division}", &division.to_string())
-                    .replace("{page}", &page.to_string())
-            }
-            None => {
-                routes::league::ENTRIES_EXP
-                    .replace("{queue}", &queue.to_string())
-                    .replace("{tier}", &tier.to_string())
-                    .replace("{division}", &division.to_string())
-            }
+            Some(page) => routes::league::ENTRIES_EXP_PAGED
+                .replace("{queue}", &queue.to_string())
+                .replace("{tier}", &tier.to_string())
+                .replace("{division}", &division.to_string())
+                .replace("{page}", &page.to_string()),
+            None => routes::league::ENTRIES_EXP
+                .replace("{queue}", &queue.to_string())
+                .replace("{tier}", &tier.to_string())
+                .replace("{division}", &division.to_string()),
         };
 
         self.api.simple_request(region, &url).await
