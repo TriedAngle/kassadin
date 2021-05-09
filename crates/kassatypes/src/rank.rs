@@ -1,4 +1,22 @@
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+use strum_macros::{AsRefStr, Display, EnumIter, EnumString, IntoStaticStr};
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(
+    EnumString,
+    EnumIter,
+    Display,
+    AsRefStr,
+    IntoStaticStr,
+    Debug,
+    Copy,
+    Clone,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+)]
 pub enum Division {
     I = 3,
     II = 2,
@@ -6,7 +24,21 @@ pub enum Division {
     IV = 0,
 }
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(
+    EnumString,
+    EnumIter,
+    Display,
+    AsRefStr,
+    IntoStaticStr,
+    Debug,
+    Copy,
+    Clone,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+)]
 pub enum Tier {
     Challenger = 9,
     Grandmaster = 8,

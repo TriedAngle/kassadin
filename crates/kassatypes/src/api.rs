@@ -4,6 +4,7 @@ pub mod account {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Account {
         pub puuid: String,
         pub game_name: String,
@@ -12,6 +13,7 @@ pub mod account {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct ActiveShard {
         pub puuid: String,
         pub game: String,
@@ -25,6 +27,7 @@ pub mod champion_mastery {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct ChampionMastery {
         pub champion: i64,
         pub chest_granted: bool,
@@ -44,6 +47,7 @@ pub mod champion {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct ChampionInfo {
         pub max_new_player_level: i32,
         pub free_champion_ids_for_new_players: Vec<i32>,
@@ -57,6 +61,7 @@ pub mod clash {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Player {
         pub summoner_id: String,
         pub team_id: String,
@@ -66,6 +71,7 @@ pub mod clash {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Team {
         pub id: String,
         pub tournament_id: i32,
@@ -80,6 +86,7 @@ pub mod clash {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Tournament {
         pub id: i32,
         pub theme_id: i32,
@@ -90,6 +97,7 @@ pub mod clash {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct TournamentPhase {
         pub id: i32,
         pub registration_time: i64,
@@ -104,6 +112,7 @@ pub mod league {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct LeagueEntry {
         pub league_id: String,
         pub summoner_id: String,
@@ -123,6 +132,7 @@ pub mod league {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct LeagueList {
         pub league_id: String,
         pub entries: Vec<LeagueItem>,
@@ -133,22 +143,24 @@ pub mod league {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct LeagueItem {
+        pub summoner_id: String,
+        pub summoner_name: String,
+        pub league_points: i32,
+        pub rank: String,
         pub fresh_blood: bool,
         pub wins: i32,
-        pub summoner_name: String,
-        pub mini_series: MiniSeries,
+        pub mini_series: Option<MiniSeries>,
         pub inactive: bool,
         pub veteran: bool,
         pub hot_streak: bool,
-        pub rank: String,
-        pub league_points: i32,
         pub losses: i32,
-        pub summoner: String,
     }
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct MiniSeries {
         pub losses: i32,
         pub progress: String,
@@ -163,6 +175,7 @@ pub mod lol_status {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct PlatformData {
         pub id: String,
         pub name: String,
@@ -173,6 +186,7 @@ pub mod lol_status {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Status {
         pub id: i32,
         pub maintenance_status: String,
@@ -187,6 +201,7 @@ pub mod lol_status {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Content {
         pub locale: String,
         pub content: String,
@@ -194,6 +209,7 @@ pub mod lol_status {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Update {
         pub id: i32,
         pub author: String,
@@ -211,6 +227,7 @@ pub mod summoner {
 
     #[derive(Debug, Clone)]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct Summoner {
         pub account_id: String,
         pub profile_icon_id: i32,

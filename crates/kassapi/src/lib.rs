@@ -1,10 +1,12 @@
 mod api;
+use anyhow::Result;
+use kassatypes::consts::Region;
+use log::{info, trace, warn};
 use reqwest::header::HeaderMap;
 use reqwest::Client;
 use reqwest::ClientBuilder;
-use anyhow::Result;
 use serde::de::DeserializeOwned;
-use kassatypes::consts::Region;
+use std::fmt::Debug;
 
 pub struct API {
     pub requester: Client,
@@ -12,71 +14,74 @@ pub struct API {
 
 #[derive(Debug, Default)]
 pub struct Builder {
-    pub header: HeaderMap,
-    pub builder: ClientBuilder,
+    header: HeaderMap,
+    builder: ClientBuilder,
 }
 
 impl Builder {
-    pub fn add_header(mut self, key: &'static str, value: &'static str) -> Self {
+    pub fn with_header(mut self, key: &'static str, value: &'static str) -> Self {
         self.header.append(key, value.parse().unwrap());
         self
     }
 
-    pub fn add_riot_key(self, key: &'static str) -> Self {
-        self.add_header("X-Riot-Token", key)
+    pub fn with_riot_key(self, key: &'static str) -> Self {
+        self.with_header("X-Riot-Token", key)
     }
 
     pub fn build(self) -> API {
+        let builder = self.builder.default_headers(self.header);
         API {
-            requester: self.builder.build().unwrap()
+            requester: builder.build().unwrap(),
         }
     }
 }
-
 
 impl API {
     pub fn builder() -> Builder {
         Builder::default()
     }
 
-    pub async fn simple_request<T: DeserializeOwned>(&self, region: Region, url: &str) -> Result<T> {
-        let url = format!("https://{}.api.riotgames.com{}", region.as_str(), url);
+    pub async fn simple_request<T: DeserializeOwned + Debug>(
+        &self,
+        region: Region,
+        url: &str,
+    ) -> Result<T> {
+        let url = format!("https://{}.api.riotgames.com{}", &region.to_string(), url);
 
-        let request = self.requester.get(url)
-            .send()
-            .await?
-            .json::<>()
-            .await?;
+        let response = self.requester.get(url).send().await?;
 
-        Ok(request)
+        let parsed = response.json::<T>().await?;
+
+        Ok(parsed)
     }
 
     pub fn account(&self) -> Account {
-        Account { api: self}
+        Account { api: self }
     }
 
     pub fn champion_mastery(&self) -> ChampionMastery {
-        ChampionMastery { api: self}
+        ChampionMastery { api: self }
     }
 
     pub fn champion(&self) -> Champion {
-        Champion { api: self}
+        Champion { api: self }
     }
 
     pub fn clash(&self) -> Clash {
-        Clash { api: self}
+        Clash { api: self }
     }
 
     pub fn league(&self) -> League {
-        League { api: self}
+        trace!("league api");
+        League { api: self }
     }
 
-    pub fn lol_status(&self) -> LOLStatus {
-        LOLStatus { api: self}
+    pub fn lol_status(&self) -> LoLStatus {
+        LoLStatus { api: self }
     }
 
     pub fn summoner(&self) -> Summoner {
-        Summoner { api: self}
+        Summoner { api: self }
     }
 }
 
@@ -100,7 +105,7 @@ pub struct League<'a> {
     api: &'a API,
 }
 
-pub struct LOLStatus<'a> {
+pub struct LoLStatus<'a> {
     api: &'a API,
 }
 
@@ -110,12 +115,30 @@ pub struct Summoner<'a> {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use crate::API;
+    use kassatypes::consts::Queue;
+    use kassatypes::consts::Region;
+    const KEY: &str = "<key>";
 
     #[test]
-    fn test() {
-        let _client = API::builder()
-            .add_riot_key("1020310")
+    fn create_api() {
+        let api = API::builder()
+            .with_header("Content-Type", "application/json;charset=utf-8")
+            .with_header("Content-Encoding", "gzip")
+            .with_riot_key(KEY)
             .build();
+    }
+
+    #[test]
+    fn make_request() {
+        env_logger::init();
+        let api = API::builder()
+            .with_riot_key(KEY)
+            .build();
+
+        let challenger =
+            tokio_test::block_on(api.league().challenger(Region::EUW, Queue::RankedSolo5x5))
+                .unwrap();
+        println!("challenger: {:?}", challenger)
     }
 }
