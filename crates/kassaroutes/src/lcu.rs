@@ -2,8 +2,9 @@ pub mod champ_select {
     pub const SUMMONER_BY_SLOT: &str = "/lol-champ-select/v1/summoners/{slotId}";
 }
 
-pub mod summoner {
+pub mod summoner_lcu {
     pub const SUMMONER_BY_ID: &str = "/lol-summoner/v1/summoners/{id}";
+    pub const CURRENT: &str = "/lol-summoner/v1/current-summoner";
 }
 
 pub mod chat {

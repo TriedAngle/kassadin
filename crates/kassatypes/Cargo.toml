@@ -8,6 +8,9 @@ edition = "2018"
 name = "kassatypes"
 path = "src/lib.rs"
 
+[features]
+lcu = []
+
 [dependencies]
 strum = "0.20.0"
 strum_macros = "0.20.1"

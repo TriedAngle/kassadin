@@ -1,6 +1,9 @@
 #![allow(unused)]
 
 pub mod api;
+#[cfg(feature = "lcu")]
+pub mod lcu;
+
 mod champions;
 mod queue;
 mod rank;

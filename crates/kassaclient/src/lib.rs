@@ -4,12 +4,15 @@ mod lcu;
 
 use anyhow::Result;
 use kassatypes::consts::Region;
-use reqwest::Client;
+use reqwest::header::{HeaderMap, HeaderValue};
+use reqwest::{Client, ClientBuilder, Response};
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use std::str::FromStr;
 use sysinfo::{ProcessExt, SystemExt};
 
+// TODO: make client an option
+// TODO: add logging
 #[derive(Debug, Clone)]
 pub struct LCU {
     pub info: Option<ClientInfo>,
@@ -20,22 +23,41 @@ impl LCU {
     pub fn new() -> Self {
         Self {
             info: None,
-            requester: Default::default(),
+            requester: ClientBuilder::new()
+                .danger_accept_invalid_certs(true)
+                .build()
+                .unwrap(),
         }
     }
 
     pub async fn simple_request<T: DeserializeOwned + Debug>(&self, url: &str) -> Result<T> {
-        let url = format!("https://localhost:{}{}", self.info().port.as_str(), url);
-
+        let url = format!("https://127.0.0.1:{}{}", self.info().port.as_str(), url);
         let response = self.requester.get(url).send().await?;
-
         let parsed = response.json::<T>().await?;
-
         Ok(parsed)
     }
 
+    pub async fn simple_request_raw(&self, url: &str) -> Response {
+        let url = format!("https://127.0.0.1:{}{}", self.info().port.as_str(), url);
+        let request = self.requester.get(url).send().await.unwrap();
+        request
+    }
+
     pub fn find(&mut self) -> Result<&ClientInfo> {
-        self.info = Some(ClientInfo::new()?);
+        let info = ClientInfo::new()?;
+        let auth = format!("riot:{}", info.token.clone());
+        let base64_auth = base64::encode(auth);
+        println!("auth: {}", base64_auth);
+        let mut headers = HeaderMap::new();
+        headers.append("Authorization", format!("Basic {}", base64_auth).parse()?);
+
+        self.requester = ClientBuilder::new()
+            .danger_accept_invalid_certs(true)
+            .default_headers(headers)
+            .build()
+            .unwrap();
+
+        self.info = Some(info);
         Ok(self.info())
     }
 
@@ -50,8 +72,17 @@ impl LCU {
     pub fn summoner(&self) -> Summoner {
         Summoner { lcu: &self }
     }
+
+    pub fn chat(&self) -> Chat {
+        Chat { lcu: &self }
+    }
+
+    pub fn lobby(&self) -> Lobby {
+        Lobby { lcu: &self }
+    }
 }
 
+// TODO: add the other attributes
 #[derive(Debug, Clone)]
 pub struct ClientInfo {
     pub pid: usize,
@@ -70,7 +101,7 @@ impl ClientInfo {
         let mut client_pid = None;
         let mut client_process = None;
         for (pid, process) in system.get_processes() {
-            if process.name() == "LeagueClient.exe" {
+            if ["LeagueClientUx.exe", "LeagueClientUx"].contains(&process.name()) {
                 client_pid = Some(pid);
                 client_process = Some(process)
             }
@@ -79,6 +110,7 @@ impl ClientInfo {
         let pid = client_pid.unwrap().clone();
         let process = client_process.unwrap();
         let env = process.cmd();
+        println!("env: {:?}", env);
 
         let path = env[0].to_string();
         let mut token = None;
@@ -87,10 +119,10 @@ impl ClientInfo {
         let mut locale = None;
 
         for var in env {
-            if var.starts_with("--riotclient-auth-token=") {
-                token = Some(var.split("--riotclient-auth-token=").collect::<Vec<&str>>()[1])
-            } else if var.starts_with("--riotclient-app-port=") {
-                port = Some(var.split("--riotclient-app-port=").collect::<Vec<&str>>()[1])
+            if var.starts_with("--remoting-auth-token=") {
+                token = Some(var.split("--remoting-auth-token=").collect::<Vec<&str>>()[1])
+            } else if var.starts_with("--app-port=") {
+                port = Some(var.split("--app-port=").collect::<Vec<&str>>()[1])
             } else if var.starts_with("--region=") {
                 let string_region = var.split("--region=").collect::<Vec<&str>>()[1];
                 region = Some(Region::from_str(string_region)?)
@@ -139,5 +171,17 @@ mod tests {
         let mut client = LCU::new();
         let info = client.find().unwrap();
         println!("{:?}", info)
+    }
+
+    #[test]
+    fn lobby_first_summoner() {
+        let mut client = LCU::new();
+
+        let info = client.find().unwrap();
+        println!("{:?}", info);
+
+        let current_summoner = tokio_test::block_on(client.summoner().current());
+
+        println!("{:?}", current_summoner);
     }
 }

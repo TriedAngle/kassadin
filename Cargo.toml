@@ -11,7 +11,8 @@ members = [
     "crates/kassatypes",
     "crates/kassaroutes",
     "crates/kassapi",
-    "crates/kassaclient"
+    "crates/kassaclient",
+    "crates/kassafiles"
 ]
 
 [features]
