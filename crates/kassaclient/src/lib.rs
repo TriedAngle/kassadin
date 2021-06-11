@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 mod lcu;
+mod socket;
 
 use anyhow::Result;
 use kassatypes::consts::Region;
@@ -43,11 +44,16 @@ impl LCU {
         request
     }
 
+    pub fn base64_auth(&self) -> String {
+        let auth = format!("riot:{}", &self.info().token);
+        base64::encode(auth)
+    }
+
     pub fn find(&mut self) -> Result<&ClientInfo> {
         let info = ClientInfo::new()?;
-        let auth = format!("riot:{}", info.token.clone());
-        let base64_auth = base64::encode(auth);
-        println!("auth: {}", base64_auth);
+        self.info = Some(info);
+        let base64_auth = self.base64_auth();
+
         let mut headers = HeaderMap::new();
         headers.append("Authorization", format!("Basic {}", base64_auth).parse()?);
 
@@ -57,12 +63,26 @@ impl LCU {
             .build()
             .unwrap();
 
-        self.info = Some(info);
         Ok(self.info())
     }
 
     pub fn info(&self) -> &ClientInfo {
         &self.info.as_ref().unwrap()
+    }
+
+    pub fn socket_url_auth(&self) -> String {
+        let info = self.info();
+        let base64_auth = self.base64_auth();
+        format!("wss://riot:{}@127.0.0.1:{}", info.token, info.port)
+    }
+
+    pub fn socket_url(&self) -> String {
+        let info = self.info();
+        format!("wss://127.0.0.1:{}", info.port)
+    }
+
+    pub fn socket(&self) -> WebSocket {
+        WebSocket { lcu: &self }
     }
 
     pub fn champ_select(&self) -> ChampSelect {
@@ -110,7 +130,6 @@ impl ClientInfo {
         let pid = client_pid.unwrap().clone();
         let process = client_process.unwrap();
         let env = process.cmd();
-        println!("env: {:?}", env);
 
         let path = env[0].to_string();
         let mut token = None;
@@ -140,6 +159,10 @@ impl ClientInfo {
             locale: locale.unwrap().to_string(),
         })
     }
+}
+
+pub struct WebSocket<'a> {
+    lcu: &'a LCU,
 }
 
 pub struct ChampSelect<'a> {
@@ -174,14 +197,18 @@ mod tests {
     }
 
     #[test]
-    fn lobby_first_summoner() {
+    fn current_summoner() {
         let mut client = LCU::new();
-
         let info = client.find().unwrap();
-        println!("{:?}", info);
-
         let current_summoner = tokio_test::block_on(client.summoner().current());
 
         println!("{:?}", current_summoner);
+    }
+
+    #[test]
+    fn websocket() {
+        let mut client = LCU::new();
+        client.find().unwrap();
+        tokio_test::block_on(client.socket().run());
     }
 }
