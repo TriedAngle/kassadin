@@ -62,7 +62,7 @@ impl<'a> ChampionMastery<'a> {
     ) -> Result<api::champion_mastery::ChampionMastery> {
         let url = routes::champion_mastery::BY_SUMMONER_BY_CHAMPION
             .replace("{encryptedSummonerId}", summoner_id)
-            .replace("{championId}", &champion.id().to_string());
+            .replace("{champion_id}", &champion.id().to_string());
 
         self.api.simple_request(region, &url).await
     }

@@ -15,17 +15,10 @@ members = [
     "crates/kassafiles"
 ]
 
-[features]
-default = ["api"]
-api = ["reqwest"]
-actix = ["awc"]
-lcu = ["sysinfo"]
-
 [dependencies]
-reqwest = { version = "0.11.3", optional = true }
-awc = { version = "3.0.0-beta.4", optional = true }
-sysinfo = { version = "0.17.2", optional = true }
+bevy = "0.5.0"
 
-kassatypes = { version = "*", path = "crates/kassatypes"}
-kassaroutes = { version = "*", path = "crates/kassaroutes"}
-kassapi = { version = "*", path = "crates/kassapi" }
+kassaclient = { version = "0.1", path = "crates/kassaclient" }
+kassatypes = { version = "0.1", path = "crates/kassatypes" }
+kassaroutes = { version = "0.1", path = "crates/kassaroutes" }
+kassapi = { version = "0.1", path = "crates/kassapi" }

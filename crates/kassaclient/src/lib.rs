@@ -8,6 +8,7 @@ use kassatypes::consts::Region;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Client, ClientBuilder, Response};
 use serde::de::DeserializeOwned;
+use serde::Serialize;
 use std::fmt::Debug;
 use std::str::FromStr;
 use sysinfo::{ProcessExt, SystemExt};
@@ -31,17 +32,28 @@ impl LCU {
         }
     }
 
-    pub async fn simple_request<T: DeserializeOwned + Debug>(&self, url: &str) -> Result<T> {
+    pub async fn simple_get<T: DeserializeOwned>(&self, url: &str) -> Result<T> {
         let url = format!("https://127.0.0.1:{}{}", self.info().port.as_str(), url);
         let response = self.requester.get(url).send().await?;
         let parsed = response.json::<T>().await?;
         Ok(parsed)
     }
 
-    pub async fn simple_request_raw(&self, url: &str) -> Response {
+    pub async fn simple_get_raw(&self, url: &str) -> Response {
         let url = format!("https://127.0.0.1:{}{}", self.info().port.as_str(), url);
         let request = self.requester.get(url).send().await.unwrap();
         request
+    }
+
+    pub async fn simple_put<T: DeserializeOwned, U: Serialize>(
+        &self,
+        url: &str,
+        data: &U,
+    ) -> Result<T> {
+        let url = format!("https://127.0.0.1:{}{}", self.info().port.as_str(), url);
+        let response = self.requester.put(url).json(data).send().await?;
+        let parsed = response.json::<T>().await?;
+        Ok(parsed)
     }
 
     pub fn base64_auth(&self) -> String {
@@ -188,6 +200,8 @@ pub struct Lobby<'a> {
 #[cfg(test)]
 mod tests {
     use crate::LCU;
+    use std::io::Write;
+    use websocket::OwnedMessage;
 
     #[test]
     fn create_lcu() {
@@ -206,9 +220,62 @@ mod tests {
     }
 
     #[test]
-    fn websocket() {
+    fn me() {
+        let mut client = LCU::new();
+        let info = client.find().unwrap();
+        let me = tokio_test::block_on(client.chat().me());
+        println!("{:?}", me);
+    }
+
+    #[test]
+    fn me_set_me() {
+        use kassatypes::lcu::chat::{LoL, Me};
+        let mut client = LCU::new();
+        let info = client.find().unwrap();
+
+        let me_info = Me {
+            lol: Some(LoL {
+                ranked_league_division: Some("IV".to_string()),
+                ranked_league_tier: Some("IRON".to_string()),
+                ..Default::default()
+            }),
+            status_message: Some("MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU 😹 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU 😹 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU 😹 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU 😹 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU 😹 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU 😹 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺 😺".to_string()),
+            ..Default::default()
+        };
+
+        let me = tokio_test::block_on(client.chat().me_post(&me_info));
+        println!("{:?}", me);
+    }
+
+    #[test]
+    fn websocket_log() {
+        use std::fs::OpenOptions;
+
+        let mut file = OpenOptions::new()
+            .append(true)
+            .create(true)
+            .open("wss.log")
+            .unwrap();
+
+        let start = std::time::SystemTime::now();
+        let since_the_epoch = start
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("Time went backwards");
+
+        file.write(format!("---log {}---\n", since_the_epoch.as_secs().to_string()).as_bytes());
+
         let mut client = LCU::new();
         client.find().unwrap();
-        tokio_test::block_on(client.socket().run());
+        let mut socket = client.socket().create();
+
+        for message in socket.incoming_messages() {
+            let message = message.unwrap();
+            match message {
+                OwnedMessage::Text(message) => {
+                    file.write(format!("{}\n", message).as_bytes());
+                }
+                _ => {}
+            }
+        }
     }
 }

@@ -1,12 +1,14 @@
 use crate::WebSocket;
 use anyhow::Result;
 
-use native_tls::{TlsConnector, TlsConnectorBuilder};
+use native_tls::{TlsConnector, TlsConnectorBuilder, TlsStream};
 use websocket::header::{Authorization, Headers};
+use websocket::sync::Client;
+use websocket::websocket_base::stream::sync::TcpStream;
 use websocket::{ClientBuilder, Message, OwnedMessage, WebSocketError};
 
 impl<'a> WebSocket<'a> {
-    pub async fn run(self) {
+    pub fn create(self) -> Client<TlsStream<TcpStream>> {
         let address = self.lcu.socket_url();
         let base64_auth = self.lcu.base64_auth();
         let mut headers = Headers::new();
@@ -27,9 +29,6 @@ impl<'a> WebSocket<'a> {
             .send_message(&Message::text("[5, \"OnJsonApiEvent\"]"))
             .unwrap();
 
-        for message in client.incoming_messages() {
-            let message = message.unwrap();
-            println!("message: {:?}", message);
-        }
+        client
     }
 }

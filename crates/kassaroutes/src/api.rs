@@ -8,7 +8,7 @@ pub mod account {
 pub mod champion_mastery {
     pub const BY_SUMMONER: &str =
         "/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}";
-    pub const BY_SUMMONER_BY_CHAMPION: &str = "/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}/by-champion/{championId}";
+    pub const BY_SUMMONER_BY_CHAMPION: &str = "/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}/by-champion/{champion_id}";
     pub const SCORES_BY_SUMMONER: &str =
         "/lol/champion-mastery/v4/scores/by-summoner/{encryptedSummonerId}";
 }
