@@ -1,7 +1,6 @@
 mod api;
 use anyhow::Result;
 use kassatypes::consts::Region;
-use log::{info, trace, warn};
 use reqwest::header::HeaderMap;
 use reqwest::Client;
 use reqwest::ClientBuilder;
@@ -9,7 +8,7 @@ use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 
 pub struct API {
-    pub requester: Client,
+    pub client: Client,
 }
 
 #[derive(Debug, Default)]
@@ -31,7 +30,7 @@ impl Builder {
     pub fn build(self) -> API {
         let builder = self.builder.default_headers(self.header);
         API {
-            requester: builder.build().unwrap(),
+            client: builder.build().unwrap(),
         }
     }
 }
@@ -48,7 +47,7 @@ impl API {
     ) -> Result<T> {
         let url = format!("https://{}.api.riotgames.com{}", &region.to_string(), url);
 
-        let response = self.requester.get(url).send().await?;
+        let response = self.client.get(url).send().await?;
 
         let parsed = response.json::<T>().await?;
 
@@ -72,7 +71,6 @@ impl API {
     }
 
     pub fn league(&self) -> League {
-        trace!("league api");
         League { api: self }
     }
 
@@ -118,7 +116,7 @@ mod test {
     use crate::API;
     use kassatypes::consts::Queue;
     use kassatypes::consts::Region;
-    const KEY: &str = "<key>";
+    const KEY: &str = "RGAPI-e8648ab6-a883-4e6b-8596-d40b02ef0917";
 
     #[test]
     fn create_api() {

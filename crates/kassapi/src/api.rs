@@ -3,7 +3,6 @@ use anyhow::Result;
 use kassaroutes as routes;
 use kassatypes::api;
 use kassatypes::consts;
-use log::{info, trace, warn};
 
 impl<'a> Account<'a> {
     pub async fn by_puuid(

@@ -9,9 +9,14 @@ name = "kassatypes"
 path = "src/lib.rs"
 
 [features]
+default = ["lcu", "api", "socket", "serialize"]
 lcu = []
+api = []
+socket = []
+serialize = ["serde", "serde_repr"]
 
 [dependencies]
-strum = "0.20.0"
-strum_macros = "0.20.1"
+strum = "0.23.0"
+strum_macros = "0.23.1"
 serde = { version = "1.0.125", features = ["derive"], optional = true }
+serde_repr = { version = "0.1.7", optional = true }

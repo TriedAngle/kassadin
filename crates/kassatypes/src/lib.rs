@@ -8,6 +8,8 @@ mod champions;
 mod queue;
 mod rank;
 mod region;
+#[cfg(feature = "socket")]
+pub mod socket;
 
 pub mod consts {
     pub use super::champions::Champion;

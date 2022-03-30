@@ -18,10 +18,11 @@ use strum_macros::{AsRefStr, Display, EnumIter, EnumString, IntoStaticStr};
     PartialEq,
 )]
 pub enum Division {
-    I = 3,
-    II = 2,
-    III = 1,
-    IV = 0,
+    I = 4,
+    II = 3,
+    III = 2,
+    IV = 1,
+    NA = 0,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

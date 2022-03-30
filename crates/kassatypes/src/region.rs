@@ -54,4 +54,7 @@ pub enum Region {
     EUROPE,
     ASIA,
     SEA,
+    #[cfg_attr(feature = "serde", serde(rename = ""))]
+    #[strum(to_string = "None", serialize = "")]
+    NONE,
 }

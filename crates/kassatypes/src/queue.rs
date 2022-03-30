@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::{AsRefStr, Display, EnumIter, EnumString, IntoStaticStr};
 
+#[repr(u16)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(
     EnumString,
@@ -26,7 +27,16 @@ pub enum Queue {
     RankedFlexSr,
     #[cfg_attr(feature = "serde", serde(rename = "RANKED_FLEX_TT"))]
     #[strum(to_string = "RANKED_FLEX_TT")]
-    RankedFlexTT,
+    RankedFlexTT, // Twisted Treeline :(
+    #[cfg_attr(feature = "serde", serde(rename = "RANKED_TFT"))]
+    #[strum(to_string = "RANKED_TFT")]
+    RankedTFT,
+    #[cfg_attr(feature = "serde", serde(rename = "RANKED_TFT_PAIRS"))]
+    #[strum(to_string = "RANKED_TFT_PAIRS")]
+    RankedTFTPairs,
+    #[cfg_attr(feature = "serde", serde(rename = "RANKED_TFT_TURBO"))]
+    #[strum(to_string = "RANKED_TFT_TURBO")]
+    RankedTFTTurbo,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
