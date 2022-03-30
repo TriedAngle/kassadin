@@ -2,3 +2,4 @@
 Cargo.lock
 
 .idea/
+/crates/kassaclient/wss.log
