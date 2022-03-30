@@ -3,6 +3,8 @@ name = "kassadin"
 version = "0.1.0"
 authors = ["Sebastian <Sebastian@Strobl.net>"]
 edition = "2018"
+description = "A library to work with the LCU and the Riot API"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

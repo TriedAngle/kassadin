@@ -3,6 +3,8 @@ name = "kassaclient"
 version = "0.1.0"
 authors = ["Sebastian <Sebastian@Strobl.net>"]
 edition = "2018"
+description = "LCU Client for the Kassadin Project"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

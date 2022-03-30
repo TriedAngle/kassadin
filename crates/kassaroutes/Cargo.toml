@@ -3,6 +3,8 @@ name = "kassaroutes"
 version = "0.1.0"
 authors = ["Sebastian <Sebastian@Strobl.net>"]
 edition = "2018"
+description = "Routes Kassadin Project"
+license = "Apache-2.0"
 
 [features]
 default = ["api"]
