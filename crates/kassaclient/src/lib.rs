@@ -3,6 +3,7 @@
 mod lcu;
 mod socket;
 
+use std::convert::TryInto;
 use anyhow::Result;
 use kassatypes::consts::Region;
 use reqwest::header::{HeaderMap, HeaderValue};
@@ -258,6 +259,8 @@ impl LCU {
     pub fn login(&self) -> Login { Login { lcu: &self } }
 
     pub fn ranked(&self) -> Ranked { Ranked { lcu: &self } }
+
+    pub fn perks(&self) -> Perks { Perks { lcu: &self } }
 }
 
 // TODO: add the other attributes
@@ -309,7 +312,7 @@ impl ClientInfo {
         }
 
         Ok(Self {
-            pid,
+            pid: pid.try_into().unwrap(),
             path,
             token: token.unwrap().to_string(),
             port: port.unwrap().to_string(),
@@ -376,6 +379,10 @@ pub struct Ranked<'a> {
     lcu: &'a LCU,
 }
 
+pub struct Perks<'a> {
+    lcu: &'a LCU,
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{ClientInfo, LCU};
@@ -384,6 +391,8 @@ mod tests {
     use websocket::OwnedMessage;
     use kassatypes::socket::{EventType, LeagueEvent, LeagueEventKind, QueueEvent};
     use std::str::FromStr;
+    use kassatypes::lcu::consts::{Perk, PerkTree};
+    use kassatypes::lcu::perks::EditPage;
     use kassatypes::socket::LeagueEventKind::Queue;
 
     #[test]
@@ -441,6 +450,36 @@ mod tests {
     }
 
     #[test]
+    fn current_perks() {
+        let mut client = LCU::new();
+        let page = tokio_test::block_on(client.perks().current());
+        println!("{:?}", page);
+    }
+
+    #[test]
+    fn set_current_perks() {
+        let mut client = LCU::new();
+
+        let page = EditPage::perks("Clowncher", vec![
+            Perk::ArcaneComet,
+            Perk::NimbusCloak,
+            Perk::AbsoluteFocus,
+            Perk::GatheringStorm,
+            Perk::EyeBallCollection,
+            Perk::RelentlessHunter,
+            Perk::CDRScaling,
+            Perk::Adaptive,
+            Perk::HealthScaling
+        ], PerkTree::Sorcery, PerkTree::Domination);
+
+        let page = tokio_test::block_on(client.perks().replace_current(page));
+
+        println!("{:?}", page);
+    }
+
+
+
+    #[test]
     fn websocket() {
         use std::fs::OpenOptions;
 
@@ -470,18 +509,17 @@ mod tests {
                             Err(_) => LeagueEvent::default(),
                         };
 
-                        if val[2].get("uri").is_some() && val[2]["uri"] == kassaroutes::matchmaking::SEARCH {
-                            event.kind = Some(Queue(None));
-                            match serde_json::from_value::<kassatypes::socket::QueueEvent>(val[2]["data"].clone()) {
-                                Ok(kind) => event.kind = Some(Queue(Some(kind))),
-                                Err(_) => {}
-                            }
-                            // println!("event: {:?}", event);
-                        } else if val[2].get("uri").is_some() && val[2]["uri"].to_string().contains(kassaroutes::lobby::BASE) {
-                            file.write(format!("{:?}\n", val).as_bytes());
-                        } else {
-                            // file.write(format!("{:?}\n", val).as_bytes());
-                        }
+                        file.write(format!("{:?}\n", val).as_bytes());
+
+                        // if val[2].get("uri").is_some() && val[2]["uri"] == kassaroutes::champ_select::SESSION {
+                        //     event.kind = Some(Queue(None));
+                        //     file.write(format!("{:?}\n", val).as_bytes());
+                        //     // println!("event: {:?}", event);
+                        // // } else if val[2].get("uri").is_some() && val[2]["uri"].to_string().contains(kassaroutes::lobby::BASE) {
+                        // //     file.write(format!("{:?}\n", val).as_bytes());
+                        // } else {
+                        //     // file.write(format!("{:?}\n", val).as_bytes());
+                        // }
                     }
                 }
                 _ => {}

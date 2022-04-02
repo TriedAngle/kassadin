@@ -6,6 +6,7 @@ pub mod game_flow {
 pub mod champ_select {
     pub const BASE: &str = "/lol-champ-select/v1";
     pub const SUMMONER_BY_SLOT: &str = "/lol-champ-select/v1/summoners/{slotId}";       // GET
+    pub const SESSION: &str = "/lol-champ-select/v1/session";
 }
 
 pub mod summoner_lcu {
@@ -67,4 +68,11 @@ pub mod riot {
 pub mod ranked {
     pub const BASE: &str = "/lol-ranked/v1";
     pub const STATS: &str = "/lol-ranked/v1/ranked-stats/{puuid}";
+}
+
+pub mod perks {
+    pub const BASE: &str = "/lol-perks/v1/";
+    pub const PAGES: &str = "/lol-perks/v1/pages";
+    pub const PAGE: &str = "/lol-perks/v1/pages/{id}";
+    pub const CURRENT: &str = "/lol-perks/v1/currentpage";                  // GET , POST
 }

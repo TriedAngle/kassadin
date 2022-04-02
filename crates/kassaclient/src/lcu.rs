@@ -1,10 +1,12 @@
 use std::collections::HashMap;
-use crate::{ChampSelect, Chat, EndOfGame, Lobby, Login, Matchmaking, Ranked, Riot, Summoner, TeamBuilder};
+use crate::{ChampSelect, Chat, EndOfGame, Lobby, Login, Matchmaking, Perks, Ranked, Riot, Summoner, TeamBuilder};
 use anyhow::Result;
 use reqwest::Response;
 
 use kassaroutes as routes;
 use kassatypes::lcu;
+use kassatypes::lcu::consts::Perk;
+use kassatypes::lcu::perks::{EditPage, Page};
 use kassatypes::lcu::ranked::RankedStatus;
 
 impl<'a> ChampSelect<'a> {
@@ -143,5 +145,29 @@ impl<'a> Ranked<'a> {
     pub async fn stats(&self, puuid: &String) -> Result<RankedStatus> {
         let url = routes::ranked::STATS.replace("{puuid}", puuid);
         self.lcu.get(&url).await
+    }
+}
+
+impl<'a> Perks<'a> {
+    pub async fn current(&self) -> Result<Page> {
+        let url = routes::perks::CURRENT;
+        self.lcu.get(url).await
+    }
+
+    pub async fn delete(&self, id: i64) -> Result<Response> {
+        let url = routes::perks::PAGES.replace("{id}", &id.to_string());
+        self.lcu.delete_raw(&url).await
+    }
+
+    pub async fn replace_current(&self, page: EditPage) -> Result<Page> {
+        let url = routes::perks::PAGES;
+        let current = self.current().await?;
+        let resp = if [50i64, 51i64, 52i64, 53i64, 54i64].contains(&current.id) {
+            self.lcu.post_with_data(url, &page).await
+        } else {
+            let _ = self.delete(current.id).await?;
+            self.lcu.post_with_data(url, &page).await
+        };
+        resp
     }
 }

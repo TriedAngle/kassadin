@@ -137,6 +137,144 @@ pub mod consts {
         Tutorial2 = 2010,
         Tutorial3 = 2020,
     }
+
+    #[repr(u32)]
+    #[cfg_attr(feature = "serde_repr", derive(Serialize_repr, Deserialize_repr))]
+    #[derive(
+    EnumString,
+    EnumIter,
+    Display,
+    AsRefStr,
+    IntoStaticStr,
+    Debug,
+    Copy,
+    Clone,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    )]
+    pub enum Perk {
+        // Precision
+        PressTheAttack = 8005,
+        LethalTempo = 8008,
+        FleetFootwork = 8021,
+        Conqueror = 8010,
+
+        Overheal = 9101,
+        Triumph = 9111,
+        PresenceOfMind = 8009,
+
+        LegendAlacrity = 9104,
+        LegendTenacity = 9105,
+        LegendBloodline = 9103,
+
+        CoupDeGras = 8014,
+        CutDown = 8017,
+        LastStand = 8299,
+
+        // Domination
+        Electrocute = 8112,
+        Predator = 8124,
+        DarkHarvest = 8128,
+        HailOfBlades = 9923,
+
+        CheapShot = 8126,
+        TasteOfBlood = 8139,
+        SuddenImpact = 8143,
+
+        ZombieWard = 8136,
+        GhostPoro = 8120,
+        EyeBallCollection = 8138,
+
+        TreasureHunter = 8135,
+        IngeniousHunter = 8134,
+        RelentlessHunter = 8105,
+        UltimateHunter = 8106,
+
+        // Sorcery
+        SummonAery = 8214,
+        ArcaneComet = 8229,
+        PhaseRush = 8230,
+
+        NullifyingOrb = 8224,
+        ManaflowBand = 8226,
+        NimbusCloak = 8275,
+
+        Trancendence = 8210,
+        Celerity = 8234,
+        AbsoluteFocus = 8233,
+
+        Scorch = 8237,
+        WaterWalking = 8232,
+        GatheringStorm = 8236,
+
+        // Resolve
+        GraspOfTheUndying = 8437,
+        Aftershock = 8439,
+        Guardian = 8465,
+
+        Demolish = 8446,
+        FontOfLife = 8463,
+        ShieldBash = 8401,
+
+        Conditioning = 8429,
+        SecondWind = 8444,
+        BonePlating = 8473,
+
+        Overgrowth = 8451,
+        Revitalize = 8453,
+        Unflinching = 8242,
+
+        // Inspiration
+        GlacialAugment = 8351,
+        UnsealedSpellBook = 8360,
+        FirstStrike = 8369,
+
+        HextechFlashtraption = 8306,
+        MagicalFootwear = 8304,
+        PerfectTiming = 8313,
+
+        FuturesMarket = 8321,
+        MinionDematerializer = 8316,
+        BiscuitDelivery = 8345,
+
+        CosmicInsight = 8347,
+        ApproachVelocity = 8410,
+        TimeWarpTonic = 8352,
+
+        // Util
+        Adaptive = 5008,
+        AttackSpeed = 5005,
+        CDRScaling = 5007,
+        Armor = 5002,
+        MagicRes = 5003,
+        HealthScaling = 5001,
+    }
+
+    #[repr(u32)]
+    #[cfg_attr(feature = "serde_repr", derive(Serialize_repr, Deserialize_repr))]
+    #[derive(
+    EnumString,
+    EnumIter,
+    Display,
+    AsRefStr,
+    IntoStaticStr,
+    Debug,
+    Copy,
+    Clone,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    )]
+    pub enum PerkTree {
+        Precision = 8000,
+        Domination = 8100,
+        Sorcery = 8200,
+        Inspiration = 8300,
+        Resolve = 8400,
+    }
 }
 
 pub mod summoner {
@@ -492,5 +630,53 @@ pub mod ranked {
         pub rated_rating: i32,
         pub rated_tier: String,
         pub tier: Tier,
+    }
+}
+
+pub mod perks {
+    #[cfg(feature = "serde")]
+    pub use serde::{Deserialize, Serialize};
+    use crate::consts::{Division, Queue};
+    use crate::lcu::consts::{PerkTree, Tier};
+
+    #[derive(Debug, Clone)]
+    #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+    pub struct Page {
+        pub id: i64,
+        pub auto_modified_selections: Option<Vec<i32>>,
+        pub current: bool,
+        pub is_active: bool,
+        pub is_deletable: bool,
+        pub is_valid: bool,
+        pub last_modified: i64,
+        pub name: String,
+        pub order: i32,
+        pub selected_perk_ids: Vec<super::consts::Perk>,
+        pub primary_style_id: i32,
+        pub sub_style_id: i32,
+    }
+
+    #[derive(Debug, Clone)]
+    #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+    pub struct EditPage {
+        pub name: Option<String>,
+        pub selected_perk_ids: Option<Vec<super::consts::Perk>>,
+        pub current: bool,
+        pub primary_style_id: PerkTree,
+        pub sub_style_id: PerkTree,
+    }
+
+    impl EditPage {
+        pub fn perks<T: Into<String>>(name: T, perks: Vec<super::consts::Perk>, primary: PerkTree, secondary: PerkTree) -> Self {
+            Self {
+                name: Some(name.into()),
+                selected_perk_ids: Some(perks),
+                current: true,
+                primary_style_id: primary,
+                sub_style_id: secondary,
+            }
+        }
     }
 }
